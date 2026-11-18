@@ -1,0 +1,553 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Anniv">
+<meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<meta name="format-detection" content="telephone=no">
+<title>Anniversaires</title>
+<link rel="apple-touch-icon" id="touchIcon" href="">
+<style>
+:root{
+  --bg:#f2f2f7;--card:#fff;--card2:#e5e5ea;--text:#000;--text2:#6c6c70;--text3:#aeaeb2;
+  --sep:rgba(60,60,67,.18);--cell:#e5e5ea;--accent:#007aff;--red:#ff3b30;
+  --g0:#ff2d55;--g1:#34c759;--g2:#5856d6;--g3:#ff9500;
+  --sheet:#f2f2f7;--input:#fff;--backdrop:rgba(0,0,0,.3);
+  --ease:cubic-bezier(.32,.72,0,1);--spring:cubic-bezier(.34,1.56,.64,1);
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#000;--card:#1c1c1e;--card2:#2c2c2e;--text:#fff;--text2:#98989f;--text3:#636366;
+  --sep:rgba(84,84,88,.55);--cell:#2a2a2d;--accent:#0a84ff;--red:#ff453a;
+  --g0:#ff375f;--g1:#30d158;--g2:#7d7aff;--g3:#ff9f0a;
+  --sheet:#1c1c1e;--input:#2c2c2e;--backdrop:rgba(0,0,0,.55);
+}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%;touch-action:manipulation;
+  -webkit-user-select:none;user-select:none}
+button{font:inherit;color:inherit;cursor:pointer}
+main{max-width:520px;margin:0 auto;min-height:100vh;background:var(--bg);
+  padding:calc(env(safe-area-inset-top) + 14px) 16px calc(env(safe-area-inset-bottom) + 112px);
+  transition:transform .5s var(--ease),border-radius .5s var(--ease),filter .5s var(--ease)}
+body.sheet-open.modal-large main{transform:scale(.93);border-radius:18px;overflow:hidden;filter:brightness(.82)}
+
+.top{display:flex;align-items:flex-end;justify-content:space-between;margin:8px 2px 16px}
+.eyebrow{margin:0;font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.03em}
+h1{margin:2px 0 0;font-size:34px;font-weight:700;letter-spacing:-.025em;line-height:1.1}
+.icon-btn{width:36px;height:36px;border-radius:50%;border:0;background:var(--card2);display:grid;place-items:center;transition:transform .25s var(--spring)}
+.icon-btn:active{transform:scale(.88)}
+
+.card{background:var(--card);border-radius:20px;padding:16px;margin-bottom:14px}
+.press{transition:transform .25s var(--spring)}
+.press:active{transform:scale(.975)}
+.fade-up{animation:fadeUp .6s var(--ease) both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}}
+
+.next{display:flex;align-items:center;gap:14px;position:relative;overflow:hidden;width:100%;border:0;text-align:left}
+.next .info{flex:1;min-width:0}
+.label{font-size:13px;color:var(--text2);margin:0 0 8px;font-weight:600}
+.next-name{font-size:24px;font-weight:700;margin:0;letter-spacing:-.015em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.next-sub{font-size:15px;color:var(--text2);margin:3px 0 0;line-height:1.35}
+.count{text-align:right;flex-shrink:0}
+.count .big{font-family:ui-rounded,-apple-system,system-ui,sans-serif;font-size:50px;font-weight:700;line-height:.95;font-variant-numeric:tabular-nums;display:block;letter-spacing:-.02em}
+.count .word{font-family:ui-rounded,-apple-system,system-ui,sans-serif;font-size:26px;font-weight:700;display:block}
+.count .unit{font-size:13px;color:var(--text2);font-weight:600}
+.burst i{position:absolute;width:6px;height:10px;border-radius:2px;top:45%;right:44px;animation:burst 1.4s var(--ease) forwards;pointer-events:none}
+@keyframes burst{to{transform:translate(var(--x),var(--y)) rotate(var(--r));opacity:0}}
+
+.grid-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
+.grid-head span:last-child{font-size:13px;color:var(--text2);font-weight:500}
+.grid-card{padding:16px 12px 16px 14px}
+.grid{display:grid;grid-template-columns:30px repeat(31,minmax(0,1fr));column-gap:1.5px;row-gap:4px;align-items:center}
+.dn{font-size:10px;color:var(--text3);text-align:center;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:visible;height:14px}
+.ml{font-size:11px;color:var(--text2);font-weight:500;line-height:1}
+.ml.cur{color:var(--text);font-weight:700}
+.c{height:20px;border-radius:2.5px;background:var(--cell);transition:transform .3s var(--spring)}
+.c.x{visibility:hidden}
+.c.past{opacity:.4}
+.c.today{box-shadow:0 0 0 1.5px var(--text);opacity:1;position:relative;z-index:1}
+.grid.anim .c{animation:pop .55s var(--spring) both;animation-delay:var(--dl)}
+@keyframes pop{from{transform:scale(0);opacity:0}}
+.grid .c.tap{animation:tap .4s var(--spring)}
+@keyframes tap{50%{transform:scale(1.9,1.3)}}
+.grid .c.pulse{animation:tap .5s var(--spring) 3}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:14px;font-size:13px;color:var(--text2)}
+.legend span{display:flex;align-items:center;gap:6px}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block;flex-shrink:0}
+
+.section-title{font-size:22px;font-weight:700;margin:24px 4px 10px;letter-spacing:-.015em}
+.list{padding:4px 0;overflow:hidden}
+.row{display:flex;align-items:center;gap:12px;width:100%;padding:10px 16px;border:0;background:none;text-align:left;position:relative;transition:background .2s}
+.row:active{background:var(--card2)}
+.row+.row::before{content:"";position:absolute;top:0;left:64px;right:0;height:.5px;background:var(--sep)}
+.av{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:600;font-size:16px;flex-shrink:0}
+.rt{flex:1;min-width:0;display:flex;flex-direction:column}
+.nm{font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb{font-size:14px;color:var(--text2);margin-top:1px}
+.dd{font-size:15px;color:var(--text2);font-variant-numeric:tabular-nums;flex-shrink:0}
+.dd.soon{color:var(--text);font-weight:600}
+
+.fab{position:fixed;right:calc(env(safe-area-inset-right) + 20px);bottom:calc(env(safe-area-inset-bottom) + 22px);
+  width:60px;height:60px;border-radius:50%;border:0;background:var(--text);color:var(--bg);display:grid;place-items:center;
+  box-shadow:0 8px 24px rgba(0,0,0,.22);transition:transform .3s var(--spring);z-index:5;animation:fabIn .7s var(--spring) .35s both}
+.fab:active{transform:scale(.86)}
+@keyframes fabIn{from{transform:scale(0) rotate(-90deg)}}
+
+.backdrop{position:fixed;inset:0;background:var(--backdrop);opacity:0;pointer-events:none;transition:opacity .4s var(--ease);z-index:10}
+body.sheet-open .backdrop{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:0;right:0;bottom:0;margin:0 auto;max-width:520px;background:var(--sheet);border-radius:16px 16px 0 0;
+  padding:0 16px calc(env(safe-area-inset-bottom) + 18px);transform:translateY(110%);transition:transform .5s var(--ease);
+  z-index:20;max-height:calc(100% - env(safe-area-inset-top) - 10px);overflow-y:auto;overscroll-behavior:contain}
+.sheet.large{top:calc(env(safe-area-inset-top) + 12px)}
+body.sheet-open .sheet{transform:translateY(0)}
+.grabber{width:38px;height:5px;border-radius:3px;background:var(--text3);margin:7px auto 2px;opacity:.7}
+.sheet-head{display:flex;align-items:center;justify-content:space-between;min-height:46px;margin-bottom:14px;gap:8px}
+.sheet-head h3{margin:0;font-size:17px;font-weight:600;flex:1;text-align:center}
+.sheet-title{text-align:center;margin:6px 0 18px}
+.sheet-title h3{margin:0;font-size:22px;font-weight:700;letter-spacing:-.01em}
+.sheet-title p{margin:4px 0 0;color:var(--text2);font-size:15px}
+.txt-btn{border:0;background:none;color:var(--accent);font-size:17px;padding:8px 0;min-width:76px;text-align:left}
+.txt-btn.strong{font-weight:600;text-align:right}
+.txt-btn:active{opacity:.4}
+
+.fg{background:var(--input);border-radius:12px;overflow:hidden;margin-bottom:14px}
+.field{display:flex;align-items:center;min-height:50px;padding:0 16px;position:relative;gap:12px}
+.field+.field::before{content:"";position:absolute;top:0;left:16px;right:0;height:.5px;background:var(--sep)}
+.field label{font-size:17px;flex-shrink:0}
+.field input,.field select{flex:1;border:0;background:none;color:var(--text);font:inherit;font-size:17px;outline:none;min-width:0;
+  -webkit-appearance:none;appearance:none;-webkit-user-select:text;user-select:text;padding:12px 0}
+.field select,.field input.r{text-align:right;text-align-last:right;color:var(--text2)}
+.field input::placeholder{color:var(--text3)}
+.field.big input{font-size:20px;font-weight:600}
+.err{color:var(--red);font-size:14px;margin:-6px 4px 12px;min-height:0}
+.shake{animation:shake .4s}
+@keyframes shake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+.sub-label{font-size:13px;color:var(--text2);margin:0 4px 8px;text-transform:uppercase;letter-spacing:.03em}
+.seg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.seg button{border:0;background:var(--input);border-radius:12px;padding:12px 2px 10px;font-size:13px;font-weight:500;
+  display:flex;flex-direction:column;align-items:center;gap:7px;transition:transform .25s var(--spring),box-shadow .25s}
+.seg button:active{transform:scale(.94)}
+.seg button .dot{width:14px;height:14px}
+.seg button.on{box-shadow:inset 0 0 0 2px var(--gc)}
+.hint{text-align:center;color:var(--text2);font-size:15px;margin:4px 0 20px;min-height:20px}
+.btn{width:100%;border:0;border-radius:14px;min-height:50px;font-size:17px;font-weight:600;background:var(--text);color:var(--bg);
+  transition:transform .25s var(--spring),opacity .2s;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 14px}
+.btn:active{transform:scale(.97);opacity:.85}
+.btn.ghost{background:var(--input);color:var(--accent);font-weight:500}
+.btn.danger{background:var(--input);color:var(--red);font-weight:500}
+.btn.small{min-height:42px;font-size:15px;width:auto;flex:1}
+.stack>*+*{margin-top:10px}
+.menu{background:var(--input);border-radius:12px;overflow:hidden;margin-bottom:14px}
+.menu button{display:flex;align-items:center;gap:14px;width:100%;border:0;background:none;padding:14px 16px;font-size:17px;text-align:left;position:relative;transition:background .2s}
+.menu button:active{background:var(--card2)}
+.menu button+button::before{content:"";position:absolute;top:0;left:52px;right:0;height:.5px;background:var(--sep)}
+.menu button .ic{width:24px;text-align:center;font-size:19px}
+.menu button.red{color:var(--red)}
+.note{font-size:13px;color:var(--text2);margin:0 4px 14px;line-height:1.45}
+.empty-day{text-align:center;color:var(--text2);font-size:15px;margin:0 0 18px}
+
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 96px);transform:translate(-50%,24px) scale(.9);opacity:0;
+  background:var(--text);color:var(--bg);padding:11px 20px;border-radius:999px;font-size:15px;font-weight:600;
+  transition:transform .45s var(--spring),opacity .3s;pointer-events:none;z-index:30;white-space:nowrap}
+.toast.show{opacity:1;transform:translate(-50%,0) scale(1)}
+.vh{position:fixed;left:-9999px;top:0;opacity:0}
+</style>
+</head>
+<body>
+<main>
+  <header class="top fade-up">
+    <div>
+      <p class="eyebrow" id="today"></p>
+      <h1>Anniversaires</h1>
+    </div>
+    <button class="icon-btn" data-act="menu" aria-label="Options">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+    </button>
+  </header>
+
+  <div id="next"></div>
+
+  <section class="card grid-card fade-up" style="animation-delay:.08s">
+    <div class="grid-head"><span class="label" style="margin:0" id="year"></span><span id="total"></span></div>
+    <div class="grid anim" id="grid"></div>
+    <div class="legend" id="legend"></div>
+  </section>
+
+  <div id="listWrap" class="fade-up" style="animation-delay:.16s">
+    <h2 class="section-title">À venir</h2>
+    <section class="card list" id="list"></section>
+  </div>
+</main>
+
+<button class="fab" data-act="add" aria-label="Ajouter un anniversaire">
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+</button>
+
+<div class="backdrop" id="backdrop"></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true"><div class="grabber"></div><div id="sheetBody"></div></div>
+<div class="toast" id="toast"></div>
+<input type="file" id="importInput" accept=".json,application/json" class="vh">
+<label class="vh" id="hapticLbl"><input type="checkbox" switch></label>
+
+<script>
+const GROUPS=[{id:'f',name:'Famille',v:'--g0'},{id:'a',name:'Amis',v:'--g1'},{id:'t',name:'Travail',v:'--g2'},{id:'o',name:'Autre',v:'--g3'}];
+const MONTHS=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+const MSHORT=['jan','fév','mar','avr','mai','juin','juil','août','sep','oct','nov','déc'];
+const DIM=[31,29,31,30,31,30,31,31,30,31,30,31];
+const KEY='anniversaires.v1';
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+
+let people=load();
+let editing=null;
+let firstRender=true;
+
+function load(){try{const r=JSON.parse(localStorage.getItem(KEY));return Array.isArray(r)?r.filter(valid):[]}catch(e){return[]}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(people))}catch(e){toast('Impossible d’enregistrer')}}
+function valid(p){return p&&typeof p.name==='string'&&p.name.trim()&&p.m>=1&&p.m<=12&&p.d>=1&&p.d<=DIM[p.m-1]}
+const gcol=id=>`var(${(GROUPS.find(g=>g.id===id)||GROUPS[3]).v})`;
+
+function todayParts(){const n=new Date();return{y:n.getFullYear(),m:n.getMonth()+1,d:n.getDate()}}
+const isLeap=y=>(y%4===0&&y%100!==0)||y%400===0;
+const utc=o=>Date.UTC(o.y,o.m-1,o.d);
+function occ(p,y){let d=p.d;if(p.m===2&&d===29&&!isLeap(y))d=28;return{y,m:p.m,d}}
+function nextOcc(p){const t=todayParts();let o=occ(p,t.y);if(utc(o)<utc(t))o=occ(p,t.y+1);return{...o,days:Math.round((utc(o)-utc(t))/864e5)}}
+function enrich(p){const n=nextOcc(p);return{...p,next:n,age:p.by?n.y-p.by:null}}
+const fmtLong=o=>new Date(o.y,o.m-1,o.d).toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
+const fmtShort=o=>`${o.d} ${MSHORT[o.m-1]}`;
+const whenTxt=n=>n===0?'Aujourd’hui':n===1?'Demain':`${n} j`;
+const byDay=(m,d)=>people.filter(p=>p.m===m&&p.d===d);
+const initial=n=>esc(n.trim().charAt(0).toUpperCase());
+const joinNames=a=>a.length<2?a.join(''):a.slice(0,-1).join(', ')+' & '+a[a.length-1];
+
+/* ---------- Haptique (iOS 18+) ---------- */
+function haptic(){try{$('#hapticLbl').click()}catch(e){}}
+
+/* ---------- Rendu ---------- */
+function render(){
+  const t=todayParts();
+  const list=people.map(enrich).sort((a,b)=>a.next.days-b.next.days||a.name.localeCompare(b.name,'fr'));
+  $('#today').textContent=fmtLong(t);
+  $('#year').textContent='Ton année';
+  $('#total').textContent=people.length?`${people.length} anniversaire${people.length>1?'s':''}`:'';
+  renderNext(list);renderGrid(t);renderLegend();renderList(list);
+  firstRender=false;
+}
+
+function renderNext(list){
+  const el=$('#next');
+  if(!list.length){
+    el.innerHTML=`<section class="card fade-up">
+      <p class="next-name">Bienvenue</p>
+      <p class="next-sub">Ajoute les anniversaires de tes proches pour voir ton année se remplir.</p>
+      <div style="display:flex;gap:8px;margin-top:16px">
+        <button class="btn small" data-act="add">Ajouter</button>
+        <button class="btn small ghost" data-act="demo">Voir un exemple</button>
+      </div></section>`;
+    return;
+  }
+  const days=list[0].next.days;
+  const grp=list.filter(x=>x.next.days===days);
+  const n=grp[0].next;
+  const col=gcol(grp[0].g);
+  let right;
+  if(days===0)right=`<span class="word" style="color:${col}">🎉</span><span class="unit">Aujourd’hui</span>`;
+  else if(days===1)right=`<span class="word" style="color:${col}">Demain</span>`;
+  else right=`<span class="big" style="color:${col}" data-count="${days}">${firstRender?0:days}</span><span class="unit">jours</span>`;
+  const sub=fmtLong(n)+(grp.length===1&&grp[0].age!=null?` · ${grp[0].age} ans`:'');
+  el.innerHTML=`<button class="card next press ${firstRender?'fade-up':''}" data-act="nextday" data-m="${n.m}" data-d="${grp[0].d}">
+    <div class="info">
+      <p class="label">${days===0?'C’est l’anniversaire de':'Prochain anniversaire'}</p>
+      <p class="next-name">${esc(joinNames(grp.map(g=>g.name)))}</p>
+      <p class="next-sub">${sub}</p>
+    </div>
+    <div class="count">${right}</div>
+  </button>`;
+  if(firstRender){
+    const c=el.querySelector('[data-count]');
+    if(c)countUp(c,days);
+    if(days===0)setTimeout(()=>confetti(el.firstElementChild),400);
+  }
+}
+
+function countUp(el,to){
+  const dur=Math.min(900,300+to*6),t0=performance.now();
+  const step=now=>{const k=Math.min(1,(now-t0)/dur),e=1-Math.pow(1-k,3);el.textContent=Math.round(to*e);if(k<1)requestAnimationFrame(step)};
+  setTimeout(()=>requestAnimationFrame(step),250);
+}
+
+function confetti(card){
+  const cols=['--g0','--g1','--g2','--g3'];
+  const box=document.createElement('div');box.className='burst';
+  for(let i=0;i<26;i++){
+    const s=document.createElement('i');
+    const a=Math.random()*Math.PI*2,r=60+Math.random()*120;
+    s.style.cssText=`background:var(${cols[i%4]});--x:${Math.cos(a)*r}px;--y:${Math.sin(a)*r}px;--r:${Math.random()*720-360}deg;animation-delay:${Math.random()*.15}s`;
+    box.appendChild(s);
+  }
+  card.appendChild(box);haptic();setTimeout(()=>box.remove(),1800);
+}
+
+function renderGrid(t){
+  const map={};people.forEach(p=>{(map[p.m+'-'+p.d]=map[p.m+'-'+p.d]||[]).push(p)});
+  let h='<span></span>';
+  for(let d=1;d<=31;d++)h+=`<span class="dn">${[1,10,20,30].includes(d)?d:''}</span>`;
+  for(let m=1;m<=12;m++){
+    h+=`<span class="ml ${m===t.m?'cur':''}">${MSHORT[m-1]}</span>`;
+    for(let d=1;d<=31;d++){
+      if(d>DIM[m-1]){h+='<span class="c x"></span>';continue}
+      const ps=map[m+'-'+d]||[];
+      const past=m<t.m||(m===t.m&&d<t.d);
+      const today=m===t.m&&d===t.d;
+      let bg='';
+      if(ps.length===1)bg=`background:${gcol(ps[0].g)}`;
+      else if(ps.length>1){
+        const cs=ps.slice(0,3).map(p=>gcol(p.g));const k=100/cs.length;
+        bg=`background:linear-gradient(135deg,${cs.map((c,i)=>`${c} ${i*k}% ${(i+1)*k}%`).join(',')})`;
+      }
+      h+=`<span class="c${ps.length?' has':''}${past?' past':''}${today?' today':''}" data-m="${m}" data-d="${d}" style="--dl:${(m*2+d)*9}ms;${bg}"></span>`;
+    }
+  }
+  const g=$('#grid');g.innerHTML=h;
+  if(!firstRender)g.classList.remove('anim');
+}
+
+function renderLegend(){
+  const counts={};people.forEach(p=>counts[p.g]=(counts[p.g]||0)+1);
+  $('#legend').innerHTML=GROUPS.filter(g=>counts[g.id]).map(g=>`<span><i class="dot" style="background:var(${g.v})"></i>${g.name} · ${counts[g.id]}</span>`).join('');
+}
+
+function rowHTML(p){
+  const n=p.next.days;
+  return `<button class="row" data-id="${p.id}">
+    <span class="av" style="background:${gcol(p.g)}">${initial(p.name)}</span>
+    <span class="rt"><span class="nm">${esc(p.name)}</span><span class="sb">${fmtShort(p.next)}${p.age!=null?` · ${p.age} ans`:''}</span></span>
+    <span class="dd ${n<=7?'soon':''}">${whenTxt(n)}</span></button>`;
+}
+function renderList(list){
+  $('#listWrap').style.display=list.length?'':'none';
+  $('#list').innerHTML=list.map(rowHTML).join('');
+}
+
+/* ---------- Feuilles (bottom sheets) ---------- */
+const sheet=$('#sheet'),sheetBody=$('#sheetBody');
+function openSheet(html,large=false){
+  sheetBody.innerHTML=html;sheet.scrollTop=0;
+  sheet.classList.toggle('large',large);
+  const main=document.querySelector('main');
+  main.style.transformOrigin=`50% ${scrollY+innerHeight/2}px`;
+  document.body.classList.toggle('modal-large',large);
+  document.body.classList.add('sheet-open');
+}
+function closeSheet(){
+  if(document.activeElement)document.activeElement.blur();
+  document.body.classList.remove('sheet-open');editing=null;
+}
+
+let sy=null,dy=0;
+sheet.addEventListener('touchstart',e=>{
+  if(!e.target.closest('.grabber,.sheet-head,.sheet-title')||e.target.closest('button'))return;
+  sy=e.touches[0].clientY;dy=0;sheet.style.transition='none';
+},{passive:true});
+sheet.addEventListener('touchmove',e=>{if(sy==null)return;dy=Math.max(0,e.touches[0].clientY-sy);sheet.style.transform=`translateY(${dy}px)`},{passive:true});
+sheet.addEventListener('touchend',()=>{if(sy==null)return;sheet.style.transition='';sheet.style.transform='';if(dy>90)closeSheet();sy=null});
+$('#backdrop').addEventListener('click',closeSheet);
+
+function openDay(m,d){
+  const ps=byDay(m,d).map(enrich);
+  const o=nextOcc({m,d});
+  const when=o.days===0?'Aujourd’hui':o.days===1?'Demain':`Dans ${o.days} jours`;
+  openSheet(`<div class="sheet-title"><h3>${d} ${MONTHS[m-1]}</h3><p>${when}</p></div>
+    ${ps.length?`<div class="fg list" style="padding:4px 0">${ps.map(rowHTML).join('')}</div>`:'<p class="empty-day">Personne ce jour-là</p>'}
+    <button class="btn" data-act="add" data-m="${m}" data-d="${d}">Ajouter un anniversaire ce jour</button>`);
+}
+
+function openEdit(id,preset){
+  const t=todayParts();
+  const p=id?people.find(x=>x.id===id):null;
+  editing=p?{...p}:{id:null,name:'',m:preset?.m||t.m,d:preset?.d||t.d,by:'',g:'f'};
+  const e=editing;
+  const dayOpts=Array.from({length:31},(_,i)=>`<option value="${i+1}" ${i+1===e.d?'selected':''}>${i+1}</option>`).join('');
+  const monOpts=MONTHS.map((n,i)=>`<option value="${i+1}" ${i+1===e.m?'selected':''}>${n}</option>`).join('');
+  openSheet(`<div class="sheet-head">
+      <button class="txt-btn" data-act="close">Annuler</button>
+      <h3>${p?'Modifier':'Nouvel anniversaire'}</h3>
+      <button class="txt-btn strong" data-act="save">OK</button></div>
+    <div class="fg" id="nameGroup"><div class="field big"><input id="fName" placeholder="Prénom" value="${esc(e.name)}" autocomplete="off" autocapitalize="words" enterkeyhint="done" maxlength="40"></div></div>
+    <p class="err" id="err"></p>
+    <div class="fg">
+      <div class="field"><label for="fDay">Jour</label><select id="fDay">${dayOpts}</select></div>
+      <div class="field"><label for="fMonth">Mois</label><select id="fMonth">${monOpts}</select></div>
+      <div class="field"><label for="fYear">Année</label><input id="fYear" class="r" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="Facultatif" value="${e.by||''}"></div>
+    </div>
+    <p class="sub-label">Groupe</p>
+    <div class="seg">${GROUPS.map(g=>`<button data-act="grp" data-g="${g.id}" class="${g.id===e.g?'on':''}" style="--gc:var(${g.v})"><i class="dot" style="background:var(${g.v})"></i>${g.name}</button>`).join('')}</div>
+    <p class="hint" id="hint"></p>
+    ${p?'<button class="btn danger" data-act="delete">Supprimer</button>':''}`,true);
+  updateHint();
+  if(!p)$('#fName').focus();
+}
+
+function formVals(){
+  return{name:$('#fName').value.trim(),d:+$('#fDay').value,m:+$('#fMonth').value,by:$('#fYear').value.trim(),g:editing.g};
+}
+function updateHint(){
+  const v=formVals();
+  if(v.d>DIM[v.m-1]){$('#fDay').value=DIM[v.m-1];v.d=DIM[v.m-1]}
+  const n=nextOcc(v);
+  let s=n.days===0?'C’est aujourd’hui !':n.days===1?'C’est demain':`Dans ${n.days} jours`;
+  if(/^\d{4}$/.test(v.by)&&+v.by<=n.y)s+=` · ${n.y-+v.by} ans`;
+  $('#hint').textContent=s;
+}
+sheetBody.addEventListener('input',e=>{if(editing){if(e.target.id==='fName')$('#err').textContent='';if(e.target.id==='fYear')e.target.value=e.target.value.replace(/\D/g,'');updateHint()}});
+sheetBody.addEventListener('change',()=>{if(editing)updateHint()});
+sheetBody.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='fName'){e.preventDefault();e.target.blur()}});
+
+function fail(msg){
+  $('#err').textContent=msg;
+  const g=$('#nameGroup');g.classList.remove('shake');void g.offsetWidth;g.classList.add('shake');haptic();
+}
+function doSave(){
+  const v=formVals();const t=todayParts();
+  if(!v.name){fail('Indique un prénom');$('#fName').focus();return}
+  if(v.by&&!(/^\d{4}$/.test(v.by)&&+v.by>=1900&&+v.by<=t.y)){fail('Année invalide (ex. 1995)');return}
+  const rec={id:editing.id||uid(),name:v.name,m:v.m,d:v.d,by:v.by?+v.by:null,g:v.g};
+  const i=people.findIndex(p=>p.id===rec.id);
+  if(i>=0)people[i]=rec;else people.push(rec);
+  save();closeSheet();render();toast(i>=0?'Modifié':'Ajouté');
+  setTimeout(()=>{const c=document.querySelector(`.c[data-m="${rec.m}"][data-d="${rec.d}"]`);if(c){c.classList.add('pulse');setTimeout(()=>c.classList.remove('pulse'),1600)}},350);
+}
+function doDelete(){
+  if(!editing||!editing.id)return;
+  if(!confirm(`Supprimer ${editing.name} ?`))return;
+  people=people.filter(p=>p.id!==editing.id);save();closeSheet();render();toast('Supprimé');
+}
+
+/* ---------- Menu ---------- */
+function openMenu(){
+  openSheet(`<div class="sheet-title"><h3>Options</h3></div>
+    <div class="menu">
+      <button data-act="export"><span class="ic">💾</span>Sauvegarder mes données</button>
+      <button data-act="import"><span class="ic">📂</span>Restaurer une sauvegarde</button>
+      <button data-act="ics"><span class="ic">📅</span>Ajouter au Calendrier</button>
+    </div>
+    <p class="note">Tes données restent uniquement sur ce téléphone. Fais une sauvegarde de temps en temps (dans Fichiers ou iCloud Drive) pour ne rien perdre. « Ajouter au Calendrier » crée des rappels annuels à 9 h le jour J.</p>
+    <div class="menu">
+      ${people.length?'':'<button data-act="demo"><span class="ic">✨</span>Charger un exemple</button>'}
+      ${people.length?'<button data-act="clear" class="red"><span class="ic">🗑</span>Tout effacer</button>':''}
+    </div>`);
+}
+
+async function shareFile(filename,type,content){
+  const file=new File([content],filename,{type});
+  if(navigator.canShare&&navigator.canShare({files:[file]})){
+    try{await navigator.share({files:[file]});return true}catch(e){if(e.name==='AbortError')return false}
+  }
+  const url=URL.createObjectURL(file);const a=document.createElement('a');
+  a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),5000);return true;
+}
+function stamp(){const t=todayParts();return `${t.y}-${String(t.m).padStart(2,'0')}-${String(t.d).padStart(2,'0')}`}
+async function doExport(){
+  if(!people.length){toast('Rien à sauvegarder');return}
+  const data=JSON.stringify({app:'anniversaires',version:1,exported:new Date().toISOString(),people},null,2);
+  if(await shareFile(`anniversaires-${stamp()}.json`,'application/json',data))toast('Sauvegarde prête');
+}
+$('#importInput').addEventListener('change',async e=>{
+  const f=e.target.files[0];e.target.value='';if(!f)return;
+  try{
+    const j=JSON.parse(await f.text());
+    const arr=(Array.isArray(j)?j:j.people||[]).map(p=>({id:p.id||uid(),name:String(p.name||'').trim(),m:+p.m,d:+p.d,by:p.by?+p.by:null,g:GROUPS.some(g=>g.id===p.g)?p.g:'o'})).filter(valid);
+    if(!arr.length){toast('Fichier vide ou invalide');return}
+    if(people.length&&!confirm(`Remplacer tes ${people.length} anniversaires par les ${arr.length} de la sauvegarde ?`))return;
+    people=arr;save();closeSheet();render();toast(`${arr.length} anniversaires restaurés`);
+  }catch(err){toast('Fichier illisible')}
+});
+async function doICS(){
+  if(!people.length){toast('Aucun anniversaire');return}
+  const pad=n=>String(n).padStart(2,'0');
+  const t=todayParts();
+  const now=new Date().toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';
+  const ie=s=>s.replace(/[\\;,]/g,m=>'\\'+m);
+  const L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Anniversaires//FR','CALSCALE:GREGORIAN'];
+  people.forEach(p=>{
+    const o=occ(p,t.y);const e=new Date(Date.UTC(o.y,o.m-1,o.d+1));
+    const feb29=p.m===2&&p.d===29;
+    L.push('BEGIN:VEVENT',`UID:${p.id}@anniversaires`,`DTSTAMP:${now}`,
+      `DTSTART;VALUE=DATE:${o.y}${pad(o.m)}${pad(o.d)}`,
+      `DTEND;VALUE=DATE:${e.getUTCFullYear()}${pad(e.getUTCMonth()+1)}${pad(e.getUTCDate())}`,
+      feb29?'RRULE:FREQ=YEARLY;BYMONTH=2;BYMONTHDAY=-1':'RRULE:FREQ=YEARLY',
+      `SUMMARY:${ie('🎂 Anniversaire de '+p.name)}`);
+    if(p.by)L.push(`DESCRIPTION:${ie('Né(e) en '+p.by)}`);
+    L.push('TRANSP:TRANSPARENT','BEGIN:VALARM','ACTION:DISPLAY',`DESCRIPTION:${ie('Anniversaire de '+p.name)}`,'TRIGGER:PT9H','END:VALARM','END:VEVENT');
+  });
+  L.push('END:VCALENDAR');
+  await shareFile('anniversaires.ics','text/calendar',L.join('\r\n'));
+}
+function loadDemo(){
+  const D=[['Marie',11,21,2001,'a'],['Lucas',12,2,1998,'a'],['Maman',12,24,1968,'f'],['Hugo',1,9,null,'a'],['Léa',2,14,2000,'a'],['Papi',3,3,1945,'f'],['Inès',4,18,2003,'a'],['Tom',5,5,null,'a'],['Sarah',5,27,1990,'t'],['Papa',6,12,1966,'f'],['Jules',7,4,1999,'a'],['Chloé',7,21,2002,'a'],['Zoé',7,21,2006,'o'],['Mamie',8,15,1947,'f'],['Nina',8,30,null,'t'],['Théo',10,7,2005,'f'],['Alex',11,3,1993,'t']];
+  people=D.map(([name,m,d,by,g])=>({id:uid(),name,m,d,by,g}));
+  save();closeSheet();firstRender=true;$('#grid').classList.add('anim');render();toast('Exemple chargé');
+}
+function doClear(){
+  if(!confirm('Effacer tous les anniversaires ? Cette action est définitive.'))return;
+  people=[];save();closeSheet();render();toast('Tout est effacé');
+}
+
+/* ---------- Actions ---------- */
+const actions={
+  add:a=>openEdit(null,a.dataset.m?{m:+a.dataset.m,d:+a.dataset.d}:null),
+  close:closeSheet,save:doSave,delete:doDelete,menu:openMenu,
+  nextday:a=>openDay(+a.dataset.m,+a.dataset.d),
+  grp:a=>{editing.g=a.dataset.g;sheetBody.querySelectorAll('.seg button').forEach(b=>b.classList.toggle('on',b===a))},
+  export:doExport,import:()=>$('#importInput').click(),ics:doICS,demo:loadDemo,clear:doClear,
+};
+document.addEventListener('click',e=>{
+  if(e.target.closest('#hapticLbl'))return;
+  const a=e.target.closest('[data-act]');
+  if(a){haptic();actions[a.dataset.act]&&actions[a.dataset.act](a);return}
+  const r=e.target.closest('.row[data-id]');
+  if(r){haptic();openEdit(r.dataset.id)}
+});
+$('#grid').addEventListener('click',e=>{
+  const c=e.target.closest('.c:not(.x)');if(!c)return;
+  let m=+c.dataset.m,d=+c.dataset.d;
+  if(!byDay(m,d).length){for(const dd of[d-1,d+1])if(dd>=1&&dd<=DIM[m-1]&&byDay(m,dd).length){d=dd;break}}
+  const tgt=document.querySelector(`.c[data-m="${m}"][data-d="${d}"]`);
+  tgt.classList.remove('tap');void tgt.offsetWidth;tgt.classList.add('tap');
+  haptic();setTimeout(()=>openDay(m,d),120);
+});
+
+/* ---------- Toast ---------- */
+let tt;function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1900)}
+
+/* ---------- Icône écran d'accueil ---------- */
+(function makeIcon(){
+  try{
+    const c=document.createElement('canvas');c.width=c.height=180;const x=c.getContext('2d');
+    x.fillStyle='#0b0b0c';x.fillRect(0,0,180,180);
+    const cols=['#ff375f','#30d158','#7d7aff','#ff9f0a'];
+    const on={'0-1':0,'1-3':1,'2-0':2,'2-4':0,'3-2':3,'4-1':1,'4-4':2};
+    for(let r=0;r<5;r++)for(let k=0;k<5;k++){
+      const key=r+'-'+k;x.fillStyle=key in on?cols[on[key]]:'#2a2a2e';
+      const s=22,g=8,o=(180-(5*s+4*g))/2;
+      x.beginPath();x.roundRect?x.roundRect(o+k*(s+g),o+r*(s+g),s,s,5):x.rect(o+k*(s+g),o+r*(s+g),s,s);x.fill();
+    }
+    $('#touchIcon').href=c.toDataURL('image/png');
+  }catch(e){}
+})();
+
+try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!document.body.classList.contains('sheet-open'))render()});
+render();
+</script>
+</body>
+</html>
