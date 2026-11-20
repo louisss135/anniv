@@ -15,14 +15,14 @@
 <style>
 :root{
   --bg:#f2f2f7;--card:#fff;--card2:#e5e5ea;--text:#000;--text2:#6c6c70;--text3:#aeaeb2;
-  --sep:rgba(60,60,67,.18);--cell:#e5e5ea;--accent:#007aff;--red:#ff3b30;
+  --sep:rgba(60,60,67,.18);--cell:#e5e5ea;--accent:#007aff;--red:#ff3b30;--gold:#c77c00;
   --g0:#ff2d55;--g1:#34c759;--g2:#5856d6;--g3:#ff9500;
   --sheet:#f2f2f7;--input:#fff;--backdrop:rgba(0,0,0,.3);
   --ease:cubic-bezier(.32,.72,0,1);--spring:cubic-bezier(.34,1.56,.64,1);
 }
 @media (prefers-color-scheme: dark){:root{
   --bg:#000;--card:#1c1c1e;--card2:#2c2c2e;--text:#fff;--text2:#98989f;--text3:#636366;
-  --sep:rgba(84,84,88,.55);--cell:#2a2a2d;--accent:#0a84ff;--red:#ff453a;
+  --sep:rgba(84,84,88,.55);--cell:#2a2a2d;--accent:#0a84ff;--red:#ff453a;--gold:#ffb340;
   --g0:#ff375f;--g1:#30d158;--g2:#7d7aff;--g3:#ff9f0a;
   --sheet:#1c1c1e;--input:#2c2c2e;--backdrop:rgba(0,0,0,.55);
 }}
@@ -45,11 +45,12 @@ h1{margin:2px 0 0;font-size:34px;font-weight:700;letter-spacing:-.025em;line-hei
 .icon-btn:active{transform:scale(.88)}
 
 .card{background:var(--card);border-radius:20px;padding:16px;margin-bottom:14px}
-.press{transition:transform .25s var(--spring)}
+.press{transition:transform .25s var(--spring),background-color .4s}
 .press:active{transform:scale(.975)}
 .fade-up{animation:fadeUp .6s var(--ease) both}
 @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}}
 
+/* Prochain anniversaire */
 .next{display:flex;align-items:center;gap:14px;position:relative;overflow:hidden;width:100%;border:0;text-align:left}
 .next .info{flex:1;min-width:0}
 .label{font-size:13px;color:var(--text2);margin:0 0 8px;font-weight:600}
@@ -59,40 +60,80 @@ h1{margin:2px 0 0;font-size:34px;font-weight:700;letter-spacing:-.025em;line-hei
 .count .big{font-family:ui-rounded,-apple-system,system-ui,sans-serif;font-size:50px;font-weight:700;line-height:.95;font-variant-numeric:tabular-nums;display:block;letter-spacing:-.02em}
 .count .word{font-family:ui-rounded,-apple-system,system-ui,sans-serif;font-size:26px;font-weight:700;display:block}
 .count .unit{font-size:13px;color:var(--text2);font-weight:600}
+.next.hot{background:color-mix(in srgb,var(--cc) var(--heat),var(--card))}
+.next.hot .big,.next.hot .word{animation:heartbeat var(--beat) ease-in-out infinite;transform-origin:70% 60%}
+@keyframes heartbeat{0%,40%,100%{transform:scale(1)}15%{transform:scale(1.12)}28%{transform:scale(1.04)}}
+.next.myday{color:#fff;animation:party 8s linear infinite}
+.next.myday .label,.next.myday .next-sub{color:rgba(255,255,255,.85)}
+.next.myday .next-name{white-space:normal}
+@keyframes party{0%,100%{background:var(--g0)}25%{background:var(--g2)}50%{background:#0a84ff}75%{background:var(--g3)}}
 .burst i{position:absolute;width:6px;height:10px;border-radius:2px;top:45%;right:44px;animation:burst 1.4s var(--ease) forwards;pointer-events:none}
 @keyframes burst{to{transform:translate(var(--x),var(--y)) rotate(var(--r));opacity:0}}
+body.my-day .fab{background:var(--g0);color:#fff}
 
+/* Badges */
+.pill{display:inline-flex;align-items:center;gap:3px;font-size:12px;font-weight:700;padding:2px 8px;border-radius:999px;
+  background:color-mix(in srgb,var(--gold) 18%,transparent);color:var(--gold);vertical-align:1px;white-space:nowrap}
+.myday .pill{background:rgba(255,255,255,.25);color:#fff}
+.you{font-size:12px;font-weight:600;color:var(--text2);background:var(--card2);border-radius:6px;padding:1px 6px;margin-left:6px;vertical-align:2px}
+.star{color:var(--gold);font-size:13px;margin-left:4px}
+
+/* Grille */
+.grid-card{padding:16px 12px 16px 14px}
 .grid-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
 .grid-head span:last-child{font-size:13px;color:var(--text2);font-weight:500}
-.grid-card{padding:16px 12px 16px 14px}
 .grid{display:grid;grid-template-columns:30px repeat(31,minmax(0,1fr));column-gap:1.5px;row-gap:4px;align-items:center}
 .dn{font-size:10px;color:var(--text3);text-align:center;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:visible;height:14px}
 .ml{font-size:11px;color:var(--text2);font-weight:500;line-height:1}
 .ml.cur{color:var(--text);font-weight:700}
-.c{height:20px;border-radius:2.5px;background:var(--cell);transition:transform .3s var(--spring)}
+.c{height:20px;border-radius:2.5px;background:var(--cell);transition:transform .3s var(--spring),opacity .3s}
 .c.x{visibility:hidden}
 .c.past{opacity:.4}
 .c.today{box-shadow:0 0 0 1.5px var(--text);opacity:1;position:relative;z-index:1}
-.grid.anim .c{animation:pop .55s var(--spring) both;animation-delay:var(--dl)}
-@keyframes pop{from{transform:scale(0);opacity:0}}
+.c.fav{box-shadow:0 0 0 1.5px var(--card),0 0 0 3px var(--cc);position:relative;z-index:2}
+.c.me{background:var(--text)!important;position:relative;z-index:2}
+.c.me.past{opacity:.75}
+.grid.anim .c{animation:cellIn .45s ease both;animation-delay:var(--dl)}
+.grid.anim .c.past{animation:sweep .6s ease-out both;animation-delay:var(--sw)}
+.grid.anim .c.today{animation:sweepT .6s ease-out both;animation-delay:var(--sw)}
+@keyframes cellIn{from{opacity:0;transform:scaleY(.2)}}
+@keyframes sweep{0%{opacity:.12}35%{opacity:1;transform:scaleY(1.4)}100%{opacity:.4;transform:none}}
+@keyframes sweepT{0%{opacity:.12}35%{opacity:1;transform:scaleY(1.5)}100%{opacity:1;transform:none}}
+.grid .c.jj{animation:beat 2.2s ease-in-out infinite;animation-delay:var(--bd)}
+@keyframes beat{0%,100%{transform:none;box-shadow:0 0 0 0 transparent}50%{transform:scaleY(1.3);box-shadow:0 0 0 3px color-mix(in srgb,var(--cc) 40%,transparent)}}
 .grid .c.tap{animation:tap .4s var(--spring)}
 @keyframes tap{50%{transform:scale(1.9,1.3)}}
 .grid .c.pulse{animation:tap .5s var(--spring) 3}
-.legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:14px;font-size:13px;color:var(--text2)}
-.legend span{display:flex;align-items:center;gap:6px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 6px;margin-top:14px}
+.legend button{display:flex;align-items:center;gap:6px;border:0;background:none;font-size:13px;color:var(--text2);padding:5px 9px;border-radius:999px;transition:background .25s,opacity .25s,transform .25s var(--spring)}
+.legend button:active{transform:scale(.94)}
+.legend button.on{background:var(--card2);color:var(--text);font-weight:600}
+.legend.filtering button:not(.on){opacity:.45}
+.legend .me-key{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text2);padding:5px 9px}
 .dot{width:9px;height:9px;border-radius:50%;display:inline-block;flex-shrink:0}
 
+/* Listes */
 .section-title{font-size:22px;font-weight:700;margin:24px 4px 10px;letter-spacing:-.015em}
 .list{padding:4px 0;overflow:hidden}
+.list .label{padding:10px 16px 2px;margin:0}
 .row{display:flex;align-items:center;gap:12px;width:100%;padding:10px 16px;border:0;background:none;text-align:left;position:relative;transition:background .2s}
 .row:active{background:var(--card2)}
 .row+.row::before{content:"";position:absolute;top:0;left:64px;right:0;height:.5px;background:var(--sep)}
 .av{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:600;font-size:16px;flex-shrink:0}
+.av.odd{background:var(--card2);color:var(--text);font-size:18px}
 .rt{flex:1;min-width:0;display:flex;flex-direction:column}
 .nm{font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sb{font-size:14px;color:var(--text2);margin-top:1px}
+.sb{font-size:14px;color:var(--text2);margin-top:2px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .dd{font-size:15px;color:var(--text2);font-variant-numeric:tabular-nums;flex-shrink:0}
 .dd.soon{color:var(--text);font-weight:600}
+.search{display:flex;align-items:center;gap:8px;background:var(--card2);border-radius:12px;padding:0 12px;margin:0 0 12px;height:40px}
+.search svg{flex-shrink:0;color:var(--text2)}
+.search input{flex:1;border:0;background:none;color:var(--text);font:inherit;font-size:17px;outline:none;min-width:0;-webkit-user-select:text;user-select:text;-webkit-appearance:none;appearance:none}
+.search input::placeholder{color:var(--text2)}
+.search input::-webkit-search-cancel-button{display:none}
+.search .clear{border:0;background:var(--text3);color:var(--card);width:18px;height:18px;border-radius:50%;display:none;place-items:center;font-size:11px;padding:0;line-height:1}
+.search.has .clear{display:grid}
+.no-res{text-align:center;color:var(--text2);padding:18px 16px;margin:0;font-size:15px}
 
 .fab{position:fixed;right:calc(env(safe-area-inset-right) + 20px);bottom:calc(env(safe-area-inset-bottom) + 22px);
   width:60px;height:60px;border-radius:50%;border:0;background:var(--text);color:var(--bg);display:grid;place-items:center;
@@ -100,6 +141,7 @@ h1{margin:2px 0 0;font-size:34px;font-weight:700;letter-spacing:-.025em;line-hei
 .fab:active{transform:scale(.86)}
 @keyframes fabIn{from{transform:scale(0) rotate(-90deg)}}
 
+/* Feuilles */
 .backdrop{position:fixed;inset:0;background:var(--backdrop);opacity:0;pointer-events:none;transition:opacity .4s var(--ease);z-index:10}
 body.sheet-open .backdrop{opacity:1;pointer-events:auto}
 .sheet{position:fixed;left:0;right:0;bottom:0;margin:0 auto;max-width:520px;background:var(--sheet);border-radius:16px 16px 0 0;
@@ -121,11 +163,16 @@ body.sheet-open .sheet{transform:translateY(0)}
 .field{display:flex;align-items:center;min-height:50px;padding:0 16px;position:relative;gap:12px}
 .field+.field::before{content:"";position:absolute;top:0;left:16px;right:0;height:.5px;background:var(--sep)}
 .field label{font-size:17px;flex-shrink:0}
+.field label.grow{flex:1}
 .field input,.field select{flex:1;border:0;background:none;color:var(--text);font:inherit;font-size:17px;outline:none;min-width:0;
   -webkit-appearance:none;appearance:none;-webkit-user-select:text;user-select:text;padding:12px 0}
 .field select,.field input.r{text-align:right;text-align-last:right;color:var(--text2)}
 .field input::placeholder{color:var(--text3)}
 .field.big input{font-size:20px;font-weight:600}
+.field input.sw{flex:0 0 auto;width:51px;height:31px;padding:0;border-radius:16px;background:var(--card2);position:relative;transition:background .25s;margin:0;cursor:pointer}
+.field input.sw::after{content:"";position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.25);transition:transform .35s var(--spring)}
+.field input.sw:checked{background:#34c759}
+.field input.sw:checked::after{transform:translateX(20px)}
 .err{color:var(--red);font-size:14px;margin:-6px 4px 12px;min-height:0}
 .shake{animation:shake .4s}
 @keyframes shake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
@@ -136,20 +183,20 @@ body.sheet-open .sheet{transform:translateY(0)}
 .seg button:active{transform:scale(.94)}
 .seg button .dot{width:14px;height:14px}
 .seg button.on{box-shadow:inset 0 0 0 2px var(--gc)}
-.hint{text-align:center;color:var(--text2);font-size:15px;margin:4px 0 20px;min-height:20px}
+.hint{text-align:center;color:var(--text2);font-size:15px;margin:4px 0 20px;min-height:20px;line-height:1.5}
 .btn{width:100%;border:0;border-radius:14px;min-height:50px;font-size:17px;font-weight:600;background:var(--text);color:var(--bg);
   transition:transform .25s var(--spring),opacity .2s;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 14px}
 .btn:active{transform:scale(.97);opacity:.85}
 .btn.ghost{background:var(--input);color:var(--accent);font-weight:500}
 .btn.danger{background:var(--input);color:var(--red);font-weight:500}
 .btn.small{min-height:42px;font-size:15px;width:auto;flex:1}
-.stack>*+*{margin-top:10px}
 .menu{background:var(--input);border-radius:12px;overflow:hidden;margin-bottom:14px}
 .menu button{display:flex;align-items:center;gap:14px;width:100%;border:0;background:none;padding:14px 16px;font-size:17px;text-align:left;position:relative;transition:background .2s}
 .menu button:active{background:var(--card2)}
 .menu button+button::before{content:"";position:absolute;top:0;left:52px;right:0;height:.5px;background:var(--sep)}
 .menu button .ic{width:24px;text-align:center;font-size:19px}
 .menu button.red{color:var(--red)}
+.menu button .state{margin-left:auto;color:var(--text2);font-size:15px}
 .note{font-size:13px;color:var(--text2);margin:0 4px 14px;line-height:1.45}
 .empty-day{text-align:center;color:var(--text2);font-size:15px;margin:0 0 18px}
 
@@ -158,6 +205,7 @@ body.sheet-open .sheet{transform:translateY(0)}
   transition:transform .45s var(--spring),opacity .3s;pointer-events:none;z-index:30;white-space:nowrap}
 .toast.show{opacity:1;transform:translate(-50%,0) scale(1)}
 .vh{position:fixed;left:-9999px;top:0;opacity:0}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important}}
 </style>
 </head>
 <body>
@@ -173,15 +221,23 @@ body.sheet-open .sheet{transform:translateY(0)}
   </header>
 
   <div id="next"></div>
+  <div id="week"></div>
 
   <section class="card grid-card fade-up" style="animation-delay:.08s">
-    <div class="grid-head"><span class="label" style="margin:0" id="year"></span><span id="total"></span></div>
+    <div class="grid-head"><span class="label" style="margin:0">Ton année</span><span id="total"></span></div>
     <div class="grid anim" id="grid"></div>
     <div class="legend" id="legend"></div>
   </section>
 
+  <div id="odd"></div>
+
   <div id="listWrap" class="fade-up" style="animation-delay:.16s">
-    <h2 class="section-title">À venir</h2>
+    <h2 class="section-title" id="listTitle">À venir</h2>
+    <div class="search" id="searchBox">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input type="search" id="q" placeholder="Rechercher" autocomplete="off" autocorrect="off" enterkeyhint="search">
+      <button class="clear" id="qClear" aria-label="Effacer la recherche">✕</button>
+    </div>
     <section class="card list" id="list"></section>
   </div>
 </main>
@@ -202,31 +258,58 @@ const MONTHS=['janvier','février','mars','avril','mai','juin','juillet','août'
 const MSHORT=['jan','fév','mar','avr','mai','juin','juil','août','sep','oct','nov','déc'];
 const DIM=[31,29,31,30,31,30,31,31,30,31,30,31];
 const KEY='anniversaires.v1';
+const SEARCH_MIN=8;
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+const norm=s=>s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
 
 let people=load();
 let editing=null;
 let firstRender=true;
+let filterG=null;
+let query='';
 
 function load(){try{const r=JSON.parse(localStorage.getItem(KEY));return Array.isArray(r)?r.filter(valid):[]}catch(e){return[]}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(people))}catch(e){toast('Impossible d’enregistrer')}}
 function valid(p){return p&&typeof p.name==='string'&&p.name.trim()&&p.m>=1&&p.m<=12&&p.d>=1&&p.d<=DIM[p.m-1]}
 const gcol=id=>`var(${(GROUPS.find(g=>g.id===id)||GROUPS[3]).v})`;
 
+/* ---------- Dates ---------- */
 function todayParts(){const n=new Date();return{y:n.getFullYear(),m:n.getMonth()+1,d:n.getDate()}}
 const isLeap=y=>(y%4===0&&y%100!==0)||y%400===0;
 const utc=o=>Date.UTC(o.y,o.m-1,o.d);
+const DAY=864e5;
 function occ(p,y){let d=p.d;if(p.m===2&&d===29&&!isLeap(y))d=28;return{y,m:p.m,d}}
-function nextOcc(p){const t=todayParts();let o=occ(p,t.y);if(utc(o)<utc(t))o=occ(p,t.y+1);return{...o,days:Math.round((utc(o)-utc(t))/864e5)}}
+function nextOcc(p){const t=todayParts();let o=occ(p,t.y);if(utc(o)<utc(t))o=occ(p,t.y+1);return{...o,days:Math.round((utc(o)-utc(t))/DAY)}}
 function enrich(p){const n=nextOcc(p);return{...p,next:n,age:p.by?n.y-p.by:null}}
+const doyIdx=(m,d)=>DIM.slice(0,m-1).reduce((a,b)=>a+b,0)+d-1;
 const fmtLong=o=>new Date(o.y,o.m-1,o.d).toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
 const fmtShort=o=>`${o.d} ${MSHORT[o.m-1]}`;
+const fmtWeekday=o=>new Date(o.y,o.m-1,o.d).toLocaleDateString('fr-FR',{weekday:'long'});
 const whenTxt=n=>n===0?'Aujourd’hui':n===1?'Demain':`${n} j`;
 const byDay=(m,d)=>people.filter(p=>p.m===m&&p.d===d);
 const initial=n=>esc(n.trim().charAt(0).toUpperCase());
 const joinNames=a=>a.length<2?a.join(''):a.slice(0,-1).join(', ')+' & '+a[a.length-1];
+const isRound=a=>a!=null&&(a===1||a===18||(a>=20&&a%10===0));
+function ageHTML(age){
+  if(age==null)return'';
+  return isRound(age)?`<span class="pill">🎉 ${age} ans</span>`:`<span>${age} ans</span>`;
+}
+
+/* ---------- Étapes insolites ---------- */
+const ODD=[
+  {days:5000,label:'5 000 jours'},{days:7000,label:'1 000 semaines'},{days:10000,label:'10 000 jours'},
+  {days:11574,label:'1 milliard de secondes'},{days:14000,label:'2 000 semaines'},{days:15000,label:'15 000 jours'},
+  {days:20000,label:'20 000 jours'},{days:21000,label:'3 000 semaines'},{days:25000,label:'25 000 jours'},{days:30000,label:'30 000 jours'}
+];
+function oddFor(p,within=365){
+  if(!p.by)return[];
+  const t=todayParts(),T=utc(t),b=Date.UTC(p.by,p.m-1,p.d);
+  return ODD.map(o=>{const at=b+o.days*DAY;const days=Math.round((at-T)/DAY);const dt=new Date(at);
+    return{p,label:o.label,days,date:{y:dt.getUTCFullYear(),m:dt.getUTCMonth()+1,d:dt.getUTCDate()}}})
+    .filter(x=>x.days>=0&&x.days<=within);
+}
 
 /* ---------- Haptique (iOS 18+) ---------- */
 function haptic(){try{$('#hapticLbl').click()}catch(e){}}
@@ -235,10 +318,13 @@ function haptic(){try{$('#hapticLbl').click()}catch(e){}}
 function render(){
   const t=todayParts();
   const list=people.map(enrich).sort((a,b)=>a.next.days-b.next.days||a.name.localeCompare(b.name,'fr'));
+  const me=list.find(p=>p.me);
+  const myDay=!!(me&&me.next.days===0);
+  document.body.classList.toggle('my-day',myDay);
   $('#today').textContent=fmtLong(t);
-  $('#year').textContent='Ton année';
   $('#total').textContent=people.length?`${people.length} anniversaire${people.length>1?'s':''}`:'';
-  renderNext(list);renderGrid(t);renderLegend();renderList(list);
+  renderNext(list);renderWeek(list);renderGrid(t,list);renderLegend();renderOdd();renderList(list);
+  updateBadge(list);
   firstRender=false;
 }
 
@@ -256,17 +342,37 @@ function renderNext(list){
   }
   const days=list[0].next.days;
   const grp=list.filter(x=>x.next.days===days);
+  const me=grp.find(x=>x.me);
   const n=grp[0].next;
+
+  if(me&&days===0){
+    const others=grp.filter(x=>!x.me).map(x=>x.name);
+    el.innerHTML=`<button class="card next myday press ${firstRender?'fade-up':''}" data-act="nextday" data-m="${n.m}" data-d="${me.d}">
+      <div class="info">
+        <p class="label">C’est ton jour</p>
+        <p class="next-name">Joyeux anniversaire 🎂</p>
+        <p class="next-sub">${me.age!=null?`${me.age} ans aujourd’hui`:'Profite bien !'}${others.length?` · comme ${esc(joinNames(others))}`:''}</p>
+      </div>
+      <div class="count"><span class="word">🥳</span></div></button>`;
+    if(firstRender)[300,1100,1900].forEach(ms=>setTimeout(()=>confetti(el.firstElementChild),ms));
+    return;
+  }
+
   const col=gcol(grp[0].g);
   let right;
   if(days===0)right=`<span class="word" style="color:${col}">🎉</span><span class="unit">Aujourd’hui</span>`;
   else if(days===1)right=`<span class="word" style="color:${col}">Demain</span>`;
   else right=`<span class="big" style="color:${col}" data-count="${days}">${firstRender?0:days}</span><span class="unit">jours</span>`;
-  const sub=fmtLong(n)+(grp.length===1&&grp[0].age!=null?` · ${grp[0].age} ans`:'');
-  el.innerHTML=`<button class="card next press ${firstRender?'fade-up':''}" data-act="nextday" data-m="${n.m}" data-d="${grp[0].d}">
+  const single=grp.length===1;
+  const sub=`${fmtLong(n)}${single&&grp[0].age!=null?` · ${ageHTML(grp[0].age)}`:''}`;
+  const heat={0:38,1:30,2:20,3:12}[days];
+  const hot=heat!=null;
+  const label=me?'Ton anniversaire arrive':days===0?'C’est l’anniversaire de':'Prochain anniversaire';
+  el.innerHTML=`<button class="card next press ${hot?'hot':''} ${firstRender?'fade-up':''}" style="--cc:${col};--heat:${heat||0}%;--beat:${[1.1,1.3,1.6,2][days]||2}s"
+      data-act="nextday" data-m="${n.m}" data-d="${grp[0].d}">
     <div class="info">
-      <p class="label">${days===0?'C’est l’anniversaire de':'Prochain anniversaire'}</p>
-      <p class="next-name">${esc(joinNames(grp.map(g=>g.name)))}</p>
+      <p class="label">${label}</p>
+      <p class="next-name">${esc(joinNames(grp.map(g=>g.name)))}${single&&grp[0].fav?'<span class="star">★</span>':''}</p>
       <p class="next-sub">${sub}</p>
     </div>
     <div class="count">${right}</div>
@@ -278,6 +384,18 @@ function renderNext(list){
   }
 }
 
+function renderWeek(list){
+  const el=$('#week');
+  if(!list.length){el.innerHTML='';return}
+  const first=list[0].next.days;
+  const inWeek=list.filter(p=>p.next.days<=7);
+  const rest=inWeek.filter(p=>p.next.days!==first);
+  if(inWeek.length<2||!rest.length){el.innerHTML='';return}
+  el.innerHTML=`<section class="card list ${firstRender?'fade-up':''}" style="animation-delay:.04s">
+    <p class="label">Cette semaine · ${inWeek.length} anniversaires</p>
+    ${rest.map(p=>rowHTML(p,{weekday:true})).join('')}</section>`;
+}
+
 function countUp(el,to){
   const dur=Math.min(900,300+to*6),t0=performance.now();
   const step=now=>{const k=Math.min(1,(now-t0)/dur),e=1-Math.pow(1-k,3);el.textContent=Math.round(to*e);if(k<1)requestAnimationFrame(step)};
@@ -285,6 +403,7 @@ function countUp(el,to){
 }
 
 function confetti(card){
+  if(!card)return;
   const cols=['--g0','--g1','--g2','--g3'];
   const box=document.createElement('div');box.className='burst';
   for(let i=0;i<26;i++){
@@ -296,8 +415,14 @@ function confetti(card){
   card.appendChild(box);haptic();setTimeout(()=>box.remove(),1800);
 }
 
-function renderGrid(t){
-  const map={};people.forEach(p=>{(map[p.m+'-'+p.d]=map[p.m+'-'+p.d]||[]).push(p)});
+function renderGrid(t,list){
+  const src=filterG?people.filter(p=>p.g===filterG):people;
+  const map={};src.forEach(p=>{(map[p.m+'-'+p.d]=map[p.m+'-'+p.d]||[]).push(p)});
+  const nextSrc=list.filter(p=>!filterG||p.g===filterG);
+  const jjKey=nextSrc.length?`${nextSrc[0].m}-${nextSrc[0].d}`:null;
+  const tIdx=doyIdx(t.m,t.d);
+  const step=1100/Math.max(tIdx,1);
+  const waveEnd=250+1100+600;
   let h='<span></span>';
   for(let d=1;d<=31;d++)h+=`<span class="dn">${[1,10,20,30].includes(d)?d:''}</span>`;
   for(let m=1;m<=12;m++){
@@ -305,45 +430,88 @@ function renderGrid(t){
     for(let d=1;d<=31;d++){
       if(d>DIM[m-1]){h+='<span class="c x"></span>';continue}
       const ps=map[m+'-'+d]||[];
-      const past=m<t.m||(m===t.m&&d<t.d);
-      const today=m===t.m&&d===t.d;
-      let bg='';
-      if(ps.length===1)bg=`background:${gcol(ps[0].g)}`;
+      const idx=doyIdx(m,d);
+      const past=idx<tIdx,today=idx===tIdx;
+      const cls=['c'];
+      if(ps.length)cls.push('has');
+      if(past)cls.push('past');
+      if(today)cls.push('today');
+      if(ps.some(p=>p.fav))cls.push('fav');
+      if(ps.some(p=>p.me))cls.push('me');
+      if(jjKey===m+'-'+d&&!past)cls.push('jj');
+      let bg='',cc='var(--text)';
+      if(ps.length===1){cc=gcol(ps[0].g);bg=`background:${cc};`}
       else if(ps.length>1){
-        const cs=ps.slice(0,3).map(p=>gcol(p.g));const k=100/cs.length;
-        bg=`background:linear-gradient(135deg,${cs.map((c,i)=>`${c} ${i*k}% ${(i+1)*k}%`).join(',')})`;
+        const cs=ps.slice(0,3).map(p=>gcol(p.g));const k=100/cs.length;cc=cs[0];
+        bg=`background:linear-gradient(135deg,${cs.map((c,i)=>`${c} ${i*k}% ${(i+1)*k}%`).join(',')});`;
       }
-      h+=`<span class="c${ps.length?' has':''}${past?' past':''}${today?' today':''}" data-m="${m}" data-d="${d}" style="--dl:${(m*2+d)*9}ms;${bg}"></span>`;
+      const sw=Math.round(250+idx*step);
+      const dl=Math.round(80+(m-1)*30);
+      h+=`<span class="${cls.join(' ')}" data-m="${m}" data-d="${d}" style="--dl:${dl}ms;--sw:${sw}ms;--bd:${firstRender?waveEnd:0}ms;--cc:${cc};${bg}"></span>`;
     }
   }
   const g=$('#grid');g.innerHTML=h;
-  if(!firstRender)g.classList.remove('anim');
+  g.classList.toggle('anim',firstRender);
+  if(firstRender)setTimeout(()=>g.classList.remove('anim'),waveEnd+100);
 }
 
 function renderLegend(){
   const counts={};people.forEach(p=>counts[p.g]=(counts[p.g]||0)+1);
-  $('#legend').innerHTML=GROUPS.filter(g=>counts[g.id]).map(g=>`<span><i class="dot" style="background:var(${g.v})"></i>${g.name} · ${counts[g.id]}</span>`).join('');
+  const lg=$('#legend');
+  lg.classList.toggle('filtering',!!filterG);
+  lg.innerHTML=GROUPS.filter(g=>counts[g.id]).map(g=>
+    `<button data-act="filter" data-g="${g.id}" class="${filterG===g.id?'on':''}"><i class="dot" style="background:var(${g.v})"></i>${g.name} · ${counts[g.id]}</button>`).join('')
+    +(people.some(p=>p.me)?'<span class="me-key"><i class="dot" style="background:var(--text);border-radius:2px"></i>Toi</span>':'');
 }
 
-function rowHTML(p){
+function renderOdd(){
+  const el=$('#odd');
+  const items=people.flatMap(p=>oddFor(p)).sort((a,b)=>a.days-b.days).slice(0,5);
+  if(!items.length){el.innerHTML='';return}
+  el.innerHTML=`<section class="card list ${firstRender?'fade-up':''}" style="animation-delay:.12s">
+    <p class="label">Étapes insolites</p>
+    ${items.map(x=>`<button class="row" data-id="${x.p.id}">
+      <span class="av odd">✨</span>
+      <span class="rt"><span class="nm">${esc(x.p.name)} · ${x.label}</span><span class="sb">${fmtLong(x.date)}</span></span>
+      <span class="dd ${x.days<=7?'soon':''}">${whenTxt(x.days)}</span></button>`).join('')}
+  </section>`;
+}
+
+function rowHTML(p,opt={}){
   const n=p.next.days;
+  const date=opt.weekday&&n>1?fmtWeekday(p.next):fmtShort(p.next);
+  const age=p.age!=null?ageHTML(p.age):'';
   return `<button class="row" data-id="${p.id}">
-    <span class="av" style="background:${gcol(p.g)}">${initial(p.name)}</span>
-    <span class="rt"><span class="nm">${esc(p.name)}</span><span class="sb">${fmtShort(p.next)}${p.age!=null?` · ${p.age} ans`:''}</span></span>
+    <span class="av" style="background:${p.me?'var(--text)':gcol(p.g)};${p.me?'color:var(--bg)':''}">${initial(p.name)}</span>
+    <span class="rt"><span class="nm">${esc(p.name)}${p.me?'<span class="you">toi</span>':''}${p.fav?'<span class="star">★</span>':''}</span>
+      <span class="sb"><span>${date}</span>${age?`<span>·</span>${age}`:''}</span></span>
     <span class="dd ${n<=7?'soon':''}">${whenTxt(n)}</span></button>`;
 }
 function renderList(list){
   $('#listWrap').style.display=list.length?'':'none';
-  $('#list').innerHTML=list.map(rowHTML).join('');
+  const sb=$('#searchBox');
+  const showSearch=people.length>=SEARCH_MIN;
+  sb.style.display=showSearch?'':'none';
+  if(!showSearch&&query){query='';$('#q').value=''}
+  sb.classList.toggle('has',!!query);
+  let items=list;
+  if(filterG)items=items.filter(p=>p.g===filterG);
+  if(query){const q=norm(query);items=items.filter(p=>norm(p.name).includes(q))}
+  const g=GROUPS.find(x=>x.id===filterG);
+  $('#listTitle').textContent=query?'Résultats':g?`À venir · ${g.name}`:'À venir';
+  $('#list').innerHTML=items.length?items.map(p=>rowHTML(p)).join(''):`<p class="no-res">Aucun résultat</p>`;
 }
+$('#q').addEventListener('input',e=>{query=e.target.value.trim();renderList(currentList())});
+$('#q').addEventListener('keydown',e=>{if(e.key==='Enter')e.target.blur()});
+$('#qClear').addEventListener('click',e=>{e.stopPropagation();query='';$('#q').value='';renderList(currentList());haptic()});
+function currentList(){return people.map(enrich).sort((a,b)=>a.next.days-b.next.days||a.name.localeCompare(b.name,'fr'))}
 
 /* ---------- Feuilles (bottom sheets) ---------- */
 const sheet=$('#sheet'),sheetBody=$('#sheetBody');
 function openSheet(html,large=false){
   sheetBody.innerHTML=html;sheet.scrollTop=0;
   sheet.classList.toggle('large',large);
-  const main=document.querySelector('main');
-  main.style.transformOrigin=`50% ${scrollY+innerHeight/2}px`;
+  document.querySelector('main').style.transformOrigin=`50% ${scrollY+innerHeight/2}px`;
   document.body.classList.toggle('modal-large',large);
   document.body.classList.add('sheet-open');
 }
@@ -351,7 +519,6 @@ function closeSheet(){
   if(document.activeElement)document.activeElement.blur();
   document.body.classList.remove('sheet-open');editing=null;
 }
-
 let sy=null,dy=0;
 sheet.addEventListener('touchstart',e=>{
   if(!e.target.closest('.grabber,.sheet-head,.sheet-title')||e.target.closest('button'))return;
@@ -366,14 +533,14 @@ function openDay(m,d){
   const o=nextOcc({m,d});
   const when=o.days===0?'Aujourd’hui':o.days===1?'Demain':`Dans ${o.days} jours`;
   openSheet(`<div class="sheet-title"><h3>${d} ${MONTHS[m-1]}</h3><p>${when}</p></div>
-    ${ps.length?`<div class="fg list" style="padding:4px 0">${ps.map(rowHTML).join('')}</div>`:'<p class="empty-day">Personne ce jour-là</p>'}
+    ${ps.length?`<div class="fg list" style="padding:4px 0">${ps.map(p=>rowHTML(p)).join('')}</div>`:'<p class="empty-day">Personne ce jour-là</p>'}
     <button class="btn" data-act="add" data-m="${m}" data-d="${d}">Ajouter un anniversaire ce jour</button>`);
 }
 
 function openEdit(id,preset){
   const t=todayParts();
   const p=id?people.find(x=>x.id===id):null;
-  editing=p?{...p}:{id:null,name:'',m:preset?.m||t.m,d:preset?.d||t.d,by:'',g:'f'};
+  editing=p?{...p}:{id:null,name:'',m:preset?.m||t.m,d:preset?.d||t.d,by:'',g:'f',fav:false,me:false};
   const e=editing;
   const dayOpts=Array.from({length:31},(_,i)=>`<option value="${i+1}" ${i+1===e.d?'selected':''}>${i+1}</option>`).join('');
   const monOpts=MONTHS.map((n,i)=>`<option value="${i+1}" ${i+1===e.m?'selected':''}>${n}</option>`).join('');
@@ -390,6 +557,11 @@ function openEdit(id,preset){
     </div>
     <p class="sub-label">Groupe</p>
     <div class="seg">${GROUPS.map(g=>`<button data-act="grp" data-g="${g.id}" class="${g.id===e.g?'on':''}" style="--gc:var(${g.v})"><i class="dot" style="background:var(${g.v})"></i>${g.name}</button>`).join('')}</div>
+    <div class="fg">
+      <div class="field"><label class="grow" for="fFav">Favori ★</label><input type="checkbox" class="sw" id="fFav" ${e.fav?'checked':''}></div>
+      <div class="field"><label class="grow" for="fMe">C’est mon anniversaire</label><input type="checkbox" class="sw" id="fMe" ${e.me?'checked':''}></div>
+    </div>
+    <p class="note">Les favoris ressortent dans la grille et ont un rappel 7 jours avant dans le Calendrier.</p>
     <p class="hint" id="hint"></p>
     ${p?'<button class="btn danger" data-act="delete">Supprimer</button>':''}`,true);
   updateHint();
@@ -397,18 +569,23 @@ function openEdit(id,preset){
 }
 
 function formVals(){
-  return{name:$('#fName').value.trim(),d:+$('#fDay').value,m:+$('#fMonth').value,by:$('#fYear').value.trim(),g:editing.g};
+  return{name:$('#fName').value.trim(),d:+$('#fDay').value,m:+$('#fMonth').value,by:$('#fYear').value.trim(),g:editing.g,
+    fav:$('#fFav').checked,me:$('#fMe').checked};
 }
 function updateHint(){
   const v=formVals();
   if(v.d>DIM[v.m-1]){$('#fDay').value=DIM[v.m-1];v.d=DIM[v.m-1]}
   const n=nextOcc(v);
   let s=n.days===0?'C’est aujourd’hui !':n.days===1?'C’est demain':`Dans ${n.days} jours`;
-  if(/^\d{4}$/.test(v.by)&&+v.by<=n.y)s+=` · ${n.y-+v.by} ans`;
-  $('#hint').textContent=s;
+  if(/^\d{4}$/.test(v.by)&&+v.by<=n.y){
+    const age=n.y-+v.by;s+=` · ${age} ans${isRound(age)?' 🎉':''}`;
+    const odd=oddFor({...v,by:+v.by},730)[0];
+    if(odd)s+=`<br>✨ ${odd.label} le ${odd.date.d} ${MONTHS[odd.date.m-1]} ${odd.date.y}`;
+  }
+  $('#hint').innerHTML=s;
 }
 sheetBody.addEventListener('input',e=>{if(editing){if(e.target.id==='fName')$('#err').textContent='';if(e.target.id==='fYear')e.target.value=e.target.value.replace(/\D/g,'');updateHint()}});
-sheetBody.addEventListener('change',()=>{if(editing)updateHint()});
+sheetBody.addEventListener('change',e=>{if(editing){if(e.target.classList.contains('sw'))haptic();updateHint()}});
 sheetBody.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='fName'){e.preventDefault();e.target.blur()}});
 
 function fail(msg){
@@ -419,7 +596,8 @@ function doSave(){
   const v=formVals();const t=todayParts();
   if(!v.name){fail('Indique un prénom');$('#fName').focus();return}
   if(v.by&&!(/^\d{4}$/.test(v.by)&&+v.by>=1900&&+v.by<=t.y)){fail('Année invalide (ex. 1995)');return}
-  const rec={id:editing.id||uid(),name:v.name,m:v.m,d:v.d,by:v.by?+v.by:null,g:v.g};
+  const rec={id:editing.id||uid(),name:v.name,m:v.m,d:v.d,by:v.by?+v.by:null,g:v.g,fav:v.fav,me:v.me};
+  if(rec.me)people.forEach(p=>{if(p.id!==rec.id)p.me=false});
   const i=people.findIndex(p=>p.id===rec.id);
   if(i>=0)people[i]=rec;else people.push(rec);
   save();closeSheet();render();toast(i>=0?'Modifié':'Ajouté');
@@ -439,7 +617,11 @@ function openMenu(){
       <button data-act="import"><span class="ic">📂</span>Restaurer une sauvegarde</button>
       <button data-act="ics"><span class="ic">📅</span>Ajouter au Calendrier</button>
     </div>
-    <p class="note">Tes données restent uniquement sur ce téléphone. Fais une sauvegarde de temps en temps (dans Fichiers ou iCloud Drive) pour ne rien perdre. « Ajouter au Calendrier » crée des rappels annuels à 9 h le jour J.</p>
+    <div class="menu">
+      <button data-act="badge"><span class="ic">🔴</span>Pastille sur l’icône<span class="state">${badgeOn()?'Activée':'Désactivée'}</span></button>
+    </div>
+    <p class="note">La pastille affiche sur l’icône le nombre d’anniversaires dans les 7 prochains jours (14 pour les favoris). Elle se met à jour à chaque ouverture de l’appli (il faut l’avoir ajoutée à l’écran d’accueil).</p>
+    <p class="note">Tes données restent uniquement sur ce téléphone. Fais une sauvegarde de temps en temps (dans Fichiers ou iCloud Drive) pour ne rien perdre. « Ajouter au Calendrier » crée des rappels annuels à 9 h le jour J, et 7 jours avant pour les favoris.</p>
     <div class="menu">
       ${people.length?'':'<button data-act="demo"><span class="ic">✨</span>Charger un exemple</button>'}
       ${people.length?'<button data-act="clear" class="red"><span class="ic">🗑</span>Tout effacer</button>':''}
@@ -458,14 +640,15 @@ async function shareFile(filename,type,content){
 function stamp(){const t=todayParts();return `${t.y}-${String(t.m).padStart(2,'0')}-${String(t.d).padStart(2,'0')}`}
 async function doExport(){
   if(!people.length){toast('Rien à sauvegarder');return}
-  const data=JSON.stringify({app:'anniversaires',version:1,exported:new Date().toISOString(),people},null,2);
+  const data=JSON.stringify({app:'anniversaires',version:2,exported:new Date().toISOString(),people},null,2);
   if(await shareFile(`anniversaires-${stamp()}.json`,'application/json',data))toast('Sauvegarde prête');
 }
 $('#importInput').addEventListener('change',async e=>{
   const f=e.target.files[0];e.target.value='';if(!f)return;
   try{
     const j=JSON.parse(await f.text());
-    const arr=(Array.isArray(j)?j:j.people||[]).map(p=>({id:p.id||uid(),name:String(p.name||'').trim(),m:+p.m,d:+p.d,by:p.by?+p.by:null,g:GROUPS.some(g=>g.id===p.g)?p.g:'o'})).filter(valid);
+    const arr=(Array.isArray(j)?j:j.people||[]).map(p=>({id:p.id||uid(),name:String(p.name||'').trim(),m:+p.m,d:+p.d,by:p.by?+p.by:null,
+      g:GROUPS.some(g=>g.id===p.g)?p.g:'o',fav:!!p.fav,me:!!p.me})).filter(valid);
     if(!arr.length){toast('Fichier vide ou invalide');return}
     if(people.length&&!confirm(`Remplacer tes ${people.length} anniversaires par les ${arr.length} de la sauvegarde ?`))return;
     people=arr;save();closeSheet();render();toast(`${arr.length} anniversaires restaurés`);
@@ -477,29 +660,34 @@ async function doICS(){
   const t=todayParts();
   const now=new Date().toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';
   const ie=s=>s.replace(/[\\;,]/g,m=>'\\'+m);
-  const L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Anniversaires//FR','CALSCALE:GREGORIAN'];
+  const L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Anniversaires//FR','CALSCALE:GREGORIAN','X-WR-CALNAME:Anniversaires'];
   people.forEach(p=>{
     const o=occ(p,t.y);const e=new Date(Date.UTC(o.y,o.m-1,o.d+1));
     const feb29=p.m===2&&p.d===29;
+    const title=p.me?'🎂 Mon anniversaire':'🎂 Anniversaire de '+p.name;
     L.push('BEGIN:VEVENT',`UID:${p.id}@anniversaires`,`DTSTAMP:${now}`,
       `DTSTART;VALUE=DATE:${o.y}${pad(o.m)}${pad(o.d)}`,
       `DTEND;VALUE=DATE:${e.getUTCFullYear()}${pad(e.getUTCMonth()+1)}${pad(e.getUTCDate())}`,
       feb29?'RRULE:FREQ=YEARLY;BYMONTH=2;BYMONTHDAY=-1':'RRULE:FREQ=YEARLY',
-      `SUMMARY:${ie('🎂 Anniversaire de '+p.name)}`);
+      `SUMMARY:${ie(title)}`);
     if(p.by)L.push(`DESCRIPTION:${ie('Né(e) en '+p.by)}`);
-    L.push('TRANSP:TRANSPARENT','BEGIN:VALARM','ACTION:DISPLAY',`DESCRIPTION:${ie('Anniversaire de '+p.name)}`,'TRIGGER:PT9H','END:VALARM','END:VEVENT');
+    L.push('TRANSP:TRANSPARENT','BEGIN:VALARM','ACTION:DISPLAY',`DESCRIPTION:${ie(title)}`,'TRIGGER:PT9H','END:VALARM');
+    if(p.fav&&!p.me)L.push('BEGIN:VALARM','ACTION:DISPLAY',`DESCRIPTION:${ie('Dans 7 jours : anniversaire de '+p.name)}`,'TRIGGER:-P6DT15H','END:VALARM');
+    L.push('END:VEVENT');
   });
   L.push('END:VCALENDAR');
   await shareFile('anniversaires.ics','text/calendar',L.join('\r\n'));
 }
 function loadDemo(){
-  const D=[['Marie',11,21,2001,'a'],['Lucas',12,2,1998,'a'],['Maman',12,24,1968,'f'],['Hugo',1,9,null,'a'],['Léa',2,14,2000,'a'],['Papi',3,3,1945,'f'],['Inès',4,18,2003,'a'],['Tom',5,5,null,'a'],['Sarah',5,27,1990,'t'],['Papa',6,12,1966,'f'],['Jules',7,4,1999,'a'],['Chloé',7,21,2002,'a'],['Zoé',7,21,2006,'o'],['Mamie',8,15,1947,'f'],['Nina',8,30,null,'t'],['Théo',10,7,2005,'f'],['Alex',11,3,1993,'t']];
-  people=D.map(([name,m,d,by,g])=>({id:uid(),name,m,d,by,g}));
-  save();closeSheet();firstRender=true;$('#grid').classList.add('anim');render();toast('Exemple chargé');
+  const D=[['Moi',4,2,1999,'o',0,1],['Marie',11,21,2001,'a',1],['Lucas',11,24,1996,'a'],['Maman',12,24,1968,'f',1],['Hugo',1,9,null,'a'],['Léa',2,14,2000,'a'],
+    ['Papi',3,3,1945,'f'],['Inès',4,18,2003,'a'],['Tom',5,5,null,'a'],['Sarah',5,27,1990,'t'],['Papa',6,12,1966,'f',1],['Jules',7,4,1999,'a'],
+    ['Chloé',7,21,2002,'a'],['Zoé',7,21,2006,'o'],['Mamie',8,15,1947,'f'],['Nina',8,30,null,'t'],['Théo',10,7,2005,'f'],['Alex',11,3,1993,'t'],['Camille',12,9,1999,'a']];
+  people=D.map(([name,m,d,by,g,fav,me])=>({id:uid(),name,m,d,by,g,fav:!!fav,me:!!me}));
+  save();closeSheet();firstRender=true;render();toast('Exemple chargé');
 }
 function doClear(){
   if(!confirm('Effacer tous les anniversaires ? Cette action est définitive.'))return;
-  people=[];save();closeSheet();render();toast('Tout est effacé');
+  people=[];filterG=null;query='';$('#q').value='';save();closeSheet();render();toast('Tout est effacé');
 }
 
 /* ---------- Actions ---------- */
@@ -508,6 +696,8 @@ const actions={
   close:closeSheet,save:doSave,delete:doDelete,menu:openMenu,
   nextday:a=>openDay(+a.dataset.m,+a.dataset.d),
   grp:a=>{editing.g=a.dataset.g;sheetBody.querySelectorAll('.seg button').forEach(b=>b.classList.toggle('on',b===a))},
+  filter:a=>{filterG=filterG===a.dataset.g?null:a.dataset.g;const t=todayParts(),l=currentList();renderGrid(t,l);renderLegend();renderList(l)},
+  badge:toggleBadge,
   export:doExport,import:()=>$('#importInput').click(),ics:doICS,demo:loadDemo,clear:doClear,
 };
 document.addEventListener('click',e=>{
@@ -520,11 +710,38 @@ document.addEventListener('click',e=>{
 $('#grid').addEventListener('click',e=>{
   const c=e.target.closest('.c:not(.x)');if(!c)return;
   let m=+c.dataset.m,d=+c.dataset.d;
-  if(!byDay(m,d).length){for(const dd of[d-1,d+1])if(dd>=1&&dd<=DIM[m-1]&&byDay(m,dd).length){d=dd;break}}
+  const has=(mm,dd)=>byDay(mm,dd).some(p=>!filterG||p.g===filterG);
+  if(!has(m,d)){for(const dd of[d-1,d+1])if(dd>=1&&dd<=DIM[m-1]&&has(m,dd)){d=dd;break}}
   const tgt=document.querySelector(`.c[data-m="${m}"][data-d="${d}"]`);
   tgt.classList.remove('tap');void tgt.offsetWidth;tgt.classList.add('tap');
+  setTimeout(()=>tgt.classList.remove('tap'),450);
   haptic();setTimeout(()=>openDay(m,d),120);
 });
+
+/* ---------- Pastille sur l'icône (iOS 16.4+, appli sur l'écran d'accueil) ---------- */
+const BADGE_KEY='anniversaires.badge';
+const isStandalone=()=>navigator.standalone===true||matchMedia('(display-mode: standalone)').matches;
+const badgeSupported=()=>'setAppBadge' in navigator&&'Notification' in window;
+function badgeOn(){try{return localStorage.getItem(BADGE_KEY)==='1'}catch(e){return false}}
+function setBadgePref(v){try{localStorage.setItem(BADGE_KEY,v?'1':'0')}catch(e){}}
+function updateBadge(list){
+  if(!badgeSupported()||!badgeOn()||Notification.permission!=='granted')return;
+  const n=list.filter(p=>!p.me&&(p.next.days<=7||(p.fav&&p.next.days<=14))).length;
+  try{const r=n?navigator.setAppBadge(n):navigator.clearAppBadge();r&&r.catch&&r.catch(()=>{})}catch(e){}
+}
+async function toggleBadge(){
+  if(badgeOn()){
+    setBadgePref(false);
+    try{const r=navigator.clearAppBadge&&navigator.clearAppBadge();r&&r.catch&&r.catch(()=>{})}catch(e){}
+    toast('Pastille désactivée');openMenu();return;
+  }
+  if(!isStandalone()){toast('Ajoute d’abord l’appli à l’écran d’accueil');return}
+  if(!badgeSupported()){toast('Non disponible sur cet iPhone');return}
+  let perm=Notification.permission;
+  if(perm==='default'){try{perm=await Notification.requestPermission()}catch(e){}}
+  if(perm!=='granted'){toast('Autorise les notifications dans Réglages');return}
+  setBadgePref(true);render();toast('Pastille activée');openMenu();
+}
 
 /* ---------- Toast ---------- */
 let tt;function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1900)}
